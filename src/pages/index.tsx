@@ -1,9 +1,22 @@
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
+import { useWalletClient } from 'wagmi';
+import { useEffect } from 'react';
+import Signer from '../components/Signer';
 
 const Home: NextPage = () => {
+  const { data: walletClient } = useWalletClient();
+  const { openConnectModal } = useConnectModal();
+  useEffect(() => {
+    if (walletClient) {
+      console.log('walletClient', walletClient);
+    } else if (openConnectModal) {
+      openConnectModal();
+    }
+  }, [walletClient])
+
   return (
     <div className={styles.container}>
       <Head>
@@ -14,9 +27,8 @@ const Home: NextPage = () => {
         />
         <link href="/favicon.ico" rel="icon" />
       </Head>
-
+      <Signer walletClient={walletClient} />
       <main className={styles.main}>
-        <ConnectButton />
 
         <h1 className={styles.title}>
           Welcome to <a href="">RainbowKit</a> + <a href="">wagmi</a> +{' '}
