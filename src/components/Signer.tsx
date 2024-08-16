@@ -1,33 +1,47 @@
 import React, { useEffect, useState } from 'react';
-
-interface LogEntry {
-  method: string;
-  url: string;
-  timestamp: string;
-}
+import io from 'socket.io-client';
 
 const Signer = ({ walletClient }: {walletClient: any}) => {
-  const [requests, setRequests] = useState<LogEntry[]>([]);
+  const [question, setQuestion] = useState<string | null>(null);
+  const [response, setResponse] = useState<string>('');
+  const [socket, setSocket] = useState<any>(null);
 
   useEffect(() => {
-    // Assume your separate server is running on port 5000
-    const eventSource = new EventSource('http://localhost:5000/api/sse');
+    let isMounted = true;
 
-    eventSource.onmessage = (event: MessageEvent) => {
-      const newRequest: LogEntry = JSON.parse(event.data);
-      setRequests((prevRequests) => [...prevRequests, newRequest]);
+    const initSocket = async () => {
+      if (typeof window !== 'undefined') {
+        const io = (await import('socket.io-client')).default;
+        const newSocket = io('http://localhost:5000');
+
+        if (isMounted) {
+          setSocket(newSocket);
+
+          newSocket.on('connect', () => {
+            console.log('Connected to server');
+          });
+
+          newSocket.on('newQuestion', (receivedQuestion: string) => {
+            console.log('Received new question:', receivedQuestion);
+            setQuestion(receivedQuestion);
+          });
+
+          newSocket.on('disconnect', () => {
+            console.log('Disconnected from server');
+          });
+        }
+      }
     };
 
-    eventSource.onerror = (error) => {
-      console.error('EventSource failed:', error);
-    };
+    initSocket();
 
     return () => {
-      eventSource.close();
+      isMounted = false;
+      if (socket) socket.disconnect();
     };
   }, []);
 
-  const signRequest = async (req: LogEntry) => {
+  const signRequest = async (req: string) => {
     if (!walletClient) {
       console.error('Wallet client not available');
       return;
@@ -35,9 +49,14 @@ const Signer = ({ walletClient }: {walletClient: any}) => {
 
     try {
       const response = await walletClient.signMessage({
-        message: req.url,
+        message: req,
       });
-  
+
+      if (socket) {
+        socket.emit('userResponse', response);
+        setQuestion(null);
+        setResponse('');
+      }
       console.log('Signed message:', response);
     } catch (error) {
       console.error('Failed to sign message:', error);
@@ -45,22 +64,20 @@ const Signer = ({ walletClient }: {walletClient: any}) => {
   };
 
   useEffect(() => {
-    if (walletClient) {
-      requests.forEach((req) => {
-        signRequest(req);
-      });
+    if (walletClient && question) {
+        signRequest(question);
     }
-  }, [requests]);
+  }, [question]);
 
   return (
     <div>
       <h2>Received Requests</h2>
       <ul>
-        {requests.map((req, index) => (
-          <li key={index}>
-            {req.method} {req.url} - {req.timestamp}
+        {question && (
+          <li key={question}>
+            {question}
           </li>
-        ))}
+        )}
       </ul>
     </div>
   );

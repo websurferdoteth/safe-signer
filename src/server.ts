@@ -1,38 +1,39 @@
 import express from 'express';
-import cors from 'cors';
-import { EventEmitter } from 'events';
+import http from 'http';
+import { Server as SocketIOServer } from 'socket.io';
+import { spawn } from 'child_process';
 
 const app = express();
-const port = 5000;
-const emitter = new EventEmitter();
+const server = http.createServer(app);
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+});
 
-app.use(cors());
+const port = 5000;
+
+// Start the Next.js app
+// const nextApp = spawn('npm', ['run', 'dev'], { stdio: 'inherit' });
+
+io.on('connection', (socket) => {
+  console.log('WebSocket client connected');
+
+  socket.on('userResponse', (response) => {
+    console.log('Received user response:', response);
+    // Process the response as needed
+  });
+});
+
 app.use(express.json());
 
-app.post('/log-request', (req, res) => {
-  const logEntry = req.body;
-  emitter.emit('newRequest', logEntry);
-  res.status(200).json({ message: 'Request logged' });
+app.post('/get-signature', (req, res) => {
+  const question = req.body.question;
+  io.emit('newQuestion', question);
+  res.json({ message: 'Question sent' });
 });
 
-app.get('/api/sse', (req, res) => {
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive',
-  });
-
-  const listener = (data: any) => {
-    res.write(`data: ${JSON.stringify(data)}\n\n`);
-  };
-
-  emitter.on('newRequest', listener);
-
-  req.on('close', () => {
-    emitter.off('newRequest', listener);
-  });
-});
-
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

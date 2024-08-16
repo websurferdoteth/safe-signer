@@ -1,29 +1,17 @@
-This is a [RainbowKit](https://rainbowkit.com) + [wagmi](https://wagmi.sh) + [Next.js](https://nextjs.org/) project bootstrapped with [`create-rainbowkit`](/packages/create-rainbowkit).
+# SafeSign
+The purpose of SafeSign is to enable developers to sign messages and transactions from their preferred browser or mobile wallet without increasing your  surface area for hacks by requiring you to view, copy and paste your private key.
 
-## Getting Started
+## TODO
+[x] Add message signing method 
+[ ] Add multiple methods for signing:
+- [ ] Add message (EIP712) signing method
+- [ ] Add Transaction signing method
+[ ] Add convenient ways to interact:
+- [ ] From contract deployment processes
+- [ ] From any other process that needs a signature
 
-First, run the development server:
+## How to use
 
-```bash
-npm run dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-## Learn More
-
-To learn more about this stack, take a look at the following resources:
-
-- [RainbowKit Documentation](https://rainbowkit.com) - Learn how to customize your wallet connection flow.
-- [wagmi Documentation](https://wagmi.sh) - Learn how to interact with Ethereum.
-- [Next.js Documentation](https://nextjs.org/docs) - Learn how to build a Next.js application.
-
-You can check out [the RainbowKit GitHub repository](https://github.com/rainbow-me/rainbowkit) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Limitations
+Because you have to sign each request manually from your wallet this method is not practical for signing dozens of transactions in one sitting unless you have great patience.
