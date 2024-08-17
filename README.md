@@ -9,6 +9,9 @@ The purpose of SafeSign is to enable developers to sign messages and transaction
 [ ] Add convenient ways to interact:
 - [ ] From contract deployment processes
 - [ ] From any other process that needs a signature
+[ ] Add Sign out button
+[ ] Add message standard that handles message type, network, data, etc.
+[ ] Add ability to change networks
 
 ## How to use
 

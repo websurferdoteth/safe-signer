@@ -1,60 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import io from 'socket.io-client';
+import React, { useEffect, useState, useRef } from 'react';
+import io, { Socket } from 'socket.io-client';
+import { SafeSignerRequest } from '../';
 
 const Signer = ({ walletClient }: {walletClient: any}) => {
-  const [question, setQuestion] = useState<string | null>(null);
+  const [request, setRequest] = useState<SafeSignerRequest | null>(null);
   const [response, setResponse] = useState<string>('');
-  const [socket, setSocket] = useState<any>(null);
+  const socketRef = useRef<Socket | null>(null);  // Use useRef to persist the socket
 
   useEffect(() => {
-    let isMounted = true;
+    if (!socketRef.current) {
+      socketRef.current = io();
 
-    const initSocket = async () => {
-      if (typeof window !== 'undefined') {
-        const io = (await import('socket.io-client')).default;
-        const newSocket = io('http://localhost:5000');
+      socketRef.current.on('connect', () => {
+        console.log('Connected to server');
+        socketRef.current?.emit('ready');
+      });
 
-        if (isMounted) {
-          setSocket(newSocket);
+      socketRef.current.on('request', (request: SafeSignerRequest) => {
+        console.log('Received new request:', request);
+        setRequest(request);
+      });
 
-          newSocket.on('connect', () => {
-            console.log('Connected to server');
-          });
-
-          newSocket.on('newQuestion', (receivedQuestion: string) => {
-            console.log('Received new question:', receivedQuestion);
-            setQuestion(receivedQuestion);
-          });
-
-          newSocket.on('disconnect', () => {
-            console.log('Disconnected from server');
-          });
-        }
-      }
-    };
-
-    initSocket();
+      socketRef.current.on('disconnect', () => {
+        console.log('Disconnected from server');
+      });
+    }
 
     return () => {
-      isMounted = false;
-      if (socket) socket.disconnect();
+      socketRef.current?.disconnect();
+      socketRef.current = null;  // Clean up the socket connection on unmount
     };
   }, []);
 
-  const signRequest = async (req: string) => {
+  const handleRequest = async (req: SafeSignerRequest) => {
     if (!walletClient) {
       console.error('Wallet client not available');
       return;
     }
 
     try {
-      const response = await walletClient.signMessage({
-        message: req,
-      });
+      let response;
+      if (req.type === 'transaction') {
+        response = await walletClient.signTransaction(req.data);
+      } else if (req.type === 'EIP712Message') {
+        response = await walletClient.signTypedData(req.data);
+      } else if (req.type === 'message') {
+        response = await walletClient.signMessage(req.data);
+      }
 
-      if (socket) {
-        socket.emit('userResponse', response);
-        setQuestion(null);
+      if (socketRef.current) {
+        socketRef.current.emit('signedResponse', response);
+        setRequest(null);
         setResponse('');
       }
       console.log('Signed message:', response);
@@ -64,20 +60,17 @@ const Signer = ({ walletClient }: {walletClient: any}) => {
   };
 
   useEffect(() => {
-    if (walletClient && question) {
-        signRequest(question);
+    console.log(request);
+    if (walletClient && request) {
+      handleRequest(request);
     }
-  }, [question]);
+  }, [request]);
 
   return (
     <div>
       <h2>Received Requests</h2>
       <ul>
-        {question && (
-          <li key={question}>
-            {question}
-          </li>
-        )}
+        {request && <li key={JSON.stringify(request)}>{JSON.stringify(request)}</li>}
       </ul>
     </div>
   );
