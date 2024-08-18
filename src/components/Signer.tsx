@@ -30,7 +30,6 @@ const Signer = ({ walletClient, socket, request }: {walletClient: any, socket: S
   };
 
   useEffect(() => {
-    console.log(request);
     if (walletClient && request) {
       handleRequest(request);
     }

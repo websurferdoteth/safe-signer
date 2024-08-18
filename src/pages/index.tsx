@@ -11,7 +11,6 @@ const Home: NextPage = () => {
   const { openConnectModal } = useConnectModal();
   useEffect(() => {
     if (walletClient) {
-      console.log("walletClient", walletClient);
     } else if (openConnectModal) {
       openConnectModal();
     }
