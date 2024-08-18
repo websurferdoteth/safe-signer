@@ -4,7 +4,7 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { useWalletClient } from "wagmi";
 import { useEffect } from "react";
-import Signer from "../components/Signer";
+import SocketContext from "../components/SocketContext";
 
 const Home: NextPage = () => {
   const { data: walletClient } = useWalletClient();
@@ -27,7 +27,7 @@ const Home: NextPage = () => {
         />
         <link href="/favicon.ico" rel="icon" />
       </Head>
-      {walletClient && <Signer walletClient={walletClient} />}
+      {walletClient && <SocketContext walletClient={walletClient} />}
     </div>
   );
 };

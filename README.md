@@ -3,15 +3,16 @@ The purpose of SafeSign is to enable developers to sign messages and transaction
 
 ## TODO
 [x] Add message signing method 
-[ ] Add multiple methods for signing:
-- [ ] Add message (EIP712) signing method
-- [ ] Add Transaction signing method
+[x] Add multiple methods for signing:
+- [x] Add message (EIP712) signing method
+- [x] Add Transaction signing method
 [ ] Add convenient ways to interact:
 - [ ] From contract deployment processes
-- [ ] From any other process that needs a signature
+- [x] From any other process that needs a signature
 [ ] Add Sign out button
-[ ] Add message standard that handles message type, network, data, etc.
-[ ] Add ability to change networks
+[x] Add message standard that handles message type, network, data, etc.
+[x] Add ability to change networks
+[ ] Add Custom Chain Support
 
 ## How to use
 

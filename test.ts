@@ -1,7 +1,7 @@
 import SafeSigner, { SafeSignerRequest } from './src/index';
 
 const request = {
-  network: 'mainnet',
+  network: 'sepolia',
   type: 'message',
   data: {
     message: 'Hello, world!'
