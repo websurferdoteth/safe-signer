@@ -2,36 +2,15 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { SafeSignerRequest } from '..';
 import Signer from './Signer';
-import { getChain, compareChains } from '../utils/chains';
+import { useWalletClient } from 'wagmi';
 
-const SocketContext = ({ walletClient }: {walletClient: any}) => {
+const SocketContext = () => {
+  const { data: walletClient } = useWalletClient();
   const [request, setRequest] = useState<SafeSignerRequest | null>(null);
-  const [isCorrectChain, setIsCorrectChain] = useState(false);
   const socketRef = useRef<Socket | null>(null);
 
   const handleRequest = useCallback(async (newRequest: SafeSignerRequest) => {
     console.log('Received new request:', newRequest);
-    const requestChain = getChain(newRequest.network);
-    if (!requestChain) {
-      console.error('Invalid network:', newRequest.network);
-      throw new Error('Unsupported network');
-    }
-    const chainId = requestChain.id;
-    const currentChainId = walletClient.chain.id;
-
-    if (!compareChains(currentChainId, chainId)) {
-      try {
-        await walletClient.switchChain({ id: chainId });
-        setIsCorrectChain(true);
-      } catch (error) {
-        console.error('Failed to switch chain:', error);
-        setIsCorrectChain(false);
-        return;
-      }
-    } else {
-      setIsCorrectChain(true);
-    }
-
     setRequest(newRequest);
   }, [walletClient]);
 
@@ -57,9 +36,9 @@ const SocketContext = ({ walletClient }: {walletClient: any}) => {
     };
   }, [handleRequest]);
 
-  if (socketRef.current && request && isCorrectChain) {
+  if (socketRef.current && request) {
     return (
-      <Signer walletClient={walletClient} socket={socketRef.current} request={request} />
+      <Signer socket={socketRef.current} request={request} />
     );
   }
   return null;

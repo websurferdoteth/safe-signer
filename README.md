@@ -13,6 +13,8 @@ The purpose of SafeSign is to enable developers to sign messages and transaction
 [x] Add message standard that handles message type, network, data, etc.
 [x] Add ability to change networks
 [ ] Add Custom Chain Support
+[ ] Safely handle when wallet doesn't have the requested chain
+[ ] Bubble up front end errors such as transaction rejections to back end
 
 ## How to use
 

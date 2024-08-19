@@ -26,7 +26,7 @@ const Home: NextPage = () => {
         />
         <link href="/favicon.ico" rel="icon" />
       </Head>
-      {walletClient && <SocketContext walletClient={walletClient} />}
+      {walletClient && <SocketContext />}
     </div>
   );
 };

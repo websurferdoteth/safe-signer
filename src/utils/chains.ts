@@ -10,6 +10,10 @@ export function getChainById(chainId: number) {
 }
 
 export function getChainByName(chainName: string) {
+    // Set up some aliases
+    switch (chainName.toLowerCase()) {
+        case 'mainnet': chainName = 'ethereum'; break;
+    }
     return chains.find(chain => chain.name.toLowerCase() === chainName.toLowerCase());
 }
 
