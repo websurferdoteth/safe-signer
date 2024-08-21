@@ -1,20 +1,14 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { SafeSignerRequest } from '..';
-import Signer from './Signer';
-import { useWalletClient } from 'wagmi';
+import WalletContext from './WalletContext';
 
 const SocketContext = () => {
-  const { data: walletClient } = useWalletClient();
   const [request, setRequest] = useState<SafeSignerRequest | null>(null);
   const socketRef = useRef<Socket | null>(null);
 
-  const handleRequest = useCallback(async (newRequest: SafeSignerRequest) => {
-    console.log('Received new request:', newRequest);
-    setRequest(newRequest);
-  }, [walletClient]);
-
   useEffect(() => {
+    console.log('SocketContainer Reflow occurred');
     if (!socketRef.current) {
       socketRef.current = io();
 
@@ -23,10 +17,11 @@ const SocketContext = () => {
         socketRef.current?.emit('ready');
       });
 
-      socketRef.current.on('request', handleRequest);
+      socketRef.current.on('request', (newRequest) => { setRequest(newRequest); });
 
       socketRef.current.on('disconnect', () => {
         console.log('Disconnected from server');
+        window.close();
       });
     }
 
@@ -34,14 +29,15 @@ const SocketContext = () => {
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
-  }, [handleRequest]);
+  }, []);
 
-  if (socketRef.current && request) {
-    return (
-      <Signer socket={socketRef.current} request={request} />
-    );
-  }
-  return null;
+  return (
+    <div>
+      {socketRef.current && request &&
+        <WalletContext socket={socketRef.current} request={request} />
+      }
+    </div>
+  );
 };
 
 export default SocketContext;

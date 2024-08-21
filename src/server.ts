@@ -27,12 +27,11 @@ export async function startServer(port: number = 3000): Promise<{ server: http.S
       io.emit('clientReady');
     });
 
-    socket.on('signedResponse', (response: string) => {
-      io.emit('signedResponse', response);
+    socket.on('response', (response: string) => {
+      io.emit('response', response);
     });
 
     socket.on('request', (request: SafeSignerRequest) => {
-      console.log('Question received on server:', request);
       io.emit('request', request);
     });
 

@@ -4,7 +4,8 @@ const request = {
   type: 'message',
   data: {
     message: 'Hello, world!'
-  }
+  },
+  chain: 'mainnet'
 };
 
 async function main() {
@@ -13,9 +14,13 @@ async function main() {
   await signer.start();
   console.log("signer server started");
   try {
-    console.log("asking question");
+    console.log("Asking for signature");
     const response = await signer.sendRequest(request as SafeSignerRequest);
     console.log('User signed response:', response);
+    console.log("Asking for signature");
+    request.chain = 'sepolia';
+    const responseAgain = await signer.sendRequest(request as SafeSignerRequest);
+    console.log('User signed response:', responseAgain);
   } catch (error) {
     console.error('Error:', error);
   } finally {

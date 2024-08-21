@@ -4,7 +4,7 @@ import { chains } from './utils/chains'
 import { _chains } from '@rainbow-me/rainbowkit/dist/config/getDefaultConfig';
 
 export const config = getDefaultConfig({
-  appName: 'SafeSign App',
+  appName: 'SafeSigner',
   projectId: 'YOUR_PROJECT_ID',
   chains: [
     ...chains

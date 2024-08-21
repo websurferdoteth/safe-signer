@@ -5,7 +5,7 @@ async function main() {
     const signer = new SafeSigner();
   
     await signer.start();
-    console.log("SafeSign started");
+    console.log("SafeSigner started");
 }
 
 (async () => await main())();

@@ -1,4 +1,4 @@
-import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useConnectModal, ConnectButton } from "@rainbow-me/rainbowkit";
 import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
@@ -19,14 +19,15 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>SafeSign App</title>
+        <title>SafeSigner</title>
         <meta
-          content="Sign messages and transaction without exposing your private key"
+          content="Sign transactions and messages from the CLI without needing to copy your private key from your mobile or browser wallet"
           name="description"
         />
         <link href="/favicon.ico" rel="icon" />
       </Head>
-      {walletClient && <SocketContext />}
+      <ConnectButton />
+      <SocketContext />
     </div>
   );
 };
