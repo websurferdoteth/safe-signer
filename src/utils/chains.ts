@@ -23,6 +23,9 @@ export function compareChains(chain1: string | number, chain2: string | number) 
     return chain1Id === chain2Id;
 }
 
-export function getChain(chain: string | number) {
+export function getChain(chain: string | number | Chain) {
+    if (typeof chain === 'object') {
+        chain = chain.id || chain.name;
+    }
     return isNaN(parseInt(String(chain))) ? getChainByName(String(chain)) : getChainById(Number(chain));
 }

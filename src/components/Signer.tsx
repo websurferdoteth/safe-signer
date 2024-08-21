@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Socket } from "socket.io-client";
 import { SafeSignerRequest } from "../";
 import {
+  PrepareTransactionRequestParameters,
   SignMessageParameters,
   SignTransactionParameters,
   SignTypedDataParameters,
@@ -33,8 +34,10 @@ const Signer = ({
         try {
           // Handle different types of requests
           if (req.type === "transaction") {
-            const signed = await walletClient?.signTransaction(
-              req.data as unknown as SignTransactionParameters<any, any>
+            const tx = await walletClient?.prepareTransactionRequest(req.data as PrepareTransactionRequestParameters);
+            console.log("tx", tx);
+            const signed = await walletClient?.sendTransaction(
+              tx as unknown as SignTransactionParameters<any,any>
             );
             response = { data: signed };
             // TODO: DO I need to differentiate between signTransaction, signMessage and signTypedMessage?

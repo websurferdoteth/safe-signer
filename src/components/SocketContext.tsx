@@ -21,7 +21,7 @@ const SocketContext = () => {
 
       socketRef.current.on('disconnect', () => {
         console.log('Disconnected from server');
-        window.close();
+        // window.close();
       });
     }
 

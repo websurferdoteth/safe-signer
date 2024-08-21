@@ -1,12 +1,11 @@
 import { startServer } from './server';
 import { io, Socket } from 'socket.io-client';
 import open from 'open';
-import { SignMessageParameters, SignTypedDataParameters, TransactionRequest } from 'viem';
+import { SignMessageParameters, SignTypedDataParameters, PrepareTransactionRequestParameters } from 'viem';
 
 export interface SafeSignerRequest {
   type: 'message' | 'EIP712Message' | 'transaction';
-  data: SignMessageParameters | SignTypedDataParameters | TransactionRequest;
-  chain?: string;
+  data: SignMessageParameters | SignTypedDataParameters | PrepareTransactionRequestParameters;
 }
 
 class SafeSigner {
@@ -59,7 +58,7 @@ class SafeSigner {
     app.all('*', (req, res) => {
       return nextHandler(req, res);
     });
-    
+
     await open(`http://localhost:${this.port}`, { wait: true, background: true});
   }
 
