@@ -1,16 +1,13 @@
 import SafeSigner, { SafeSignerRequest } from './src/index';
 const messageRequest = {
-  type: 'message',
-  data: {
-    message: 'Hello, world!'
-  },
+  message: 'Hello, world!'
 };
 
-
-const EIP712FormattedMessage = {
+const signTypedDataRequest = {
   domain: {
     name: "EIP-712 Message",
     version: "1",
+    chainId: 56,
   },
   types: {
     Person: [
@@ -52,19 +49,10 @@ const EIP712FormattedMessage = {
   },
 }
 
-const signTypedDataRequest = {
-  chain: 'mainnet',
-  type: 'EIP712Message',
-  data: EIP712FormattedMessage,
-};
-
 const transactionRequest = {
-  type: 'transaction',
-  data: {
     to: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
     value: 0,
-    chain: 31337
-  },
+    chain: 111555111
 };
 
 async function main() {
@@ -75,27 +63,18 @@ async function main() {
   try {
     console.log("Asking for signature on message");
     const response = await signer.sendRequest(messageRequest as SafeSignerRequest);
-    console.log('User signed response:', response);
+    console.log('Message signature:', response);
     console.log("Asking for signature on EIP712 Typed Data Message");
     const responseAgain = await signer.sendRequest(signTypedDataRequest as unknown as SafeSignerRequest);
-    console.log('User signed response:', responseAgain);
+    console.log('Typed message signature:', responseAgain);
+    console.log("Asking for signature and broadcast of transaction");
     const responseAgainAgain = await signer.sendRequest(transactionRequest as unknown as SafeSignerRequest);
-    console.log('User signed response:', responseAgainAgain);
-    transactionRequest.data.chain = 111555111;
-    const responseAgainAgainAgain = await signer.sendRequest(transactionRequest as unknown as SafeSignerRequest);
-    console.log('User signed response:', responseAgainAgainAgain);
+    console.log('Transaction submitted:', responseAgainAgain);
   } catch (error) {
     console.error('Error:', error);
   } finally {
     signer.stop();
   }
-}
-
-// create promise that waits a few seconds
-function wait(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
 }
 
 main();

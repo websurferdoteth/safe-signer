@@ -3,7 +3,6 @@ import { Socket } from "socket.io-client";
 import { SafeSignerRequest } from "..";
 import { compareChains, getChain } from "../utils/chains";
 import { Chain, PrepareTransactionRequestParameters, WalletClient } from "viem";
-import { SignEip712TransactionParameters } from "viem/zksync";
 import { SignTypedDataParameters } from "viem/accounts";
 
 const handledSwitchChainRequests = new Set();
@@ -21,26 +20,23 @@ const SwitchChain = ({
 }) => {
 
   const handleSwitchChain = useCallback(async (req: SafeSignerRequest) => {
-    console.log("Switching chain request:", req);
       const requestId = `SwitchingChainPhase:${JSON.stringify(req)}`;
       if (handledSwitchChainRequests.has(requestId)) {
-        console.log("Already handled switch chain request");
         return;
       }
       handledSwitchChainRequests.add(requestId);
       try {
         // Find chain from request
         let chain: Chain | string | number | undefined | null;
-        if ((req.data as unknown as SignTypedDataParameters)?.domain?.chainId) {
-          chain = (req.data as unknown as SignTypedDataParameters)?.domain?.chainId;
-        } else if ((req.data as PrepareTransactionRequestParameters)?.chain) {
-          chain = (req.data as PrepareTransactionRequestParameters)?.chain;
+        if ((req as unknown as SignTypedDataParameters)?.domain?.chainId) {
+          chain = (req as unknown as SignTypedDataParameters)?.domain?.chainId;
+        } else if ((req as PrepareTransactionRequestParameters)?.chain) {
+          chain = (req as PrepareTransactionRequestParameters)?.chain;
         }
-        
+
         // Switch chain if needed
         if (chain) {
           const requestChain = getChain(chain);
-          // TODO: Add chain to wallet if not already there
           if (!requestChain) {
             console.error("Invalid chain:", chain);
             throw new Error("Unsupported chain");
@@ -49,7 +45,18 @@ const SwitchChain = ({
           const currentChainId = walletClient?.chain?.id;
 
           if (!compareChains(currentChainId as number, chainId)) {
-            await walletClient?.switchChain({ id: chainId });
+            try {
+              await walletClient?.switchChain({ id: chainId });
+            } catch (error: any) {
+              // Handle chain not found error
+              if (error.code == 4902) {
+                // Adding the chain
+                await walletClient?.addChain({ chain: requestChain });
+                await walletClient?.switchChain({ id: chainId });
+              } else {
+                throw error;
+              }
+            }
           }
         }
         setIsCorrectChain(true);

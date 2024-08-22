@@ -3,10 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import open from 'open';
 import { SignMessageParameters, SignTypedDataParameters, PrepareTransactionRequestParameters } from 'viem';
 
-export interface SafeSignerRequest {
-  type: 'message' | 'EIP712Message' | 'transaction';
-  data: SignMessageParameters | SignTypedDataParameters | PrepareTransactionRequestParameters;
-}
+export type SafeSignerRequest = SignMessageParameters | SignTypedDataParameters | PrepareTransactionRequestParameters;
 
 class SafeSigner {
   private socket!: Socket;
@@ -34,7 +31,6 @@ class SafeSigner {
     // Defining routes here so we have access to the class methods
     app.post('/api/submit-request', (req, res) => {
       const request: SafeSignerRequest = req.body;
-      console.log('API request received:', request);
 
       // Wait for the response and send it back to the client
       this.sendRequest(request).then((response) => {

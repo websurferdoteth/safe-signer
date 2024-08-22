@@ -8,7 +8,6 @@ const SocketContext = () => {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    console.log('SocketContainer Reflow occurred');
     if (!socketRef.current) {
       socketRef.current = io();
 
@@ -21,7 +20,7 @@ const SocketContext = () => {
 
       socketRef.current.on('disconnect', () => {
         console.log('Disconnected from server');
-        // window.close();
+        window.close();
       });
     }
 

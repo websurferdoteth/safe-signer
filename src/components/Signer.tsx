@@ -33,25 +33,23 @@ const Signer = ({
 
         try {
           // Handle different types of requests
-          if (req.type === "transaction") {
-            const tx = await walletClient?.prepareTransactionRequest(req.data as PrepareTransactionRequestParameters);
-            console.log("tx", tx);
+          if ((req as SignTypedDataParameters).types) {
+            const signed = await walletClient?.signTypedData(
+              req as unknown as SignTypedDataParameters
+            );
+            response = { data: signed };
+          } else if ((req as SignMessageParameters).message) {
+            const signed = await walletClient?.signMessage(
+              req as unknown as SignMessageParameters
+            );
+            response = { data: signed };
+          } else if (req as PrepareTransactionRequestParameters) {
+            const tx = await walletClient?.prepareTransactionRequest(req as PrepareTransactionRequestParameters);
             const signed = await walletClient?.sendTransaction(
               tx as unknown as SignTransactionParameters<any,any>
             );
             response = { data: signed };
-            // TODO: DO I need to differentiate between signTransaction, signMessage and signTypedMessage?
-          } else if (req.type === "EIP712Message") {
-            const signed = await walletClient?.signTypedData(
-              req.data as unknown as SignTypedDataParameters
-            );
-            response = { data: signed };
-          } else if (req.type === "message") {
-            const signed = await walletClient?.signMessage(
-              req.data as unknown as SignMessageParameters
-            );
-            response = { data: signed };
-          }
+          } 
         } catch (error: any) {
           console.error(error);
           response = { error: error?.message };

@@ -14,13 +14,18 @@ The purpose of SafeSigner is to enable developers to sign messages and transacti
 [x] Add ability to change networks
 [x] Bubble up front end errors such as transaction rejections to back end
 [x] Clean up api responses
+[x] Safely handle when wallet doesn't have the requested chain
+[x] Detect chain from transaction and remove top level chain property
 [ ] Add Custom Chain Support
-[ ] Safely handle when wallet doesn't have the requested chain
 [ ] Add Readme instructions for api use
-[ ] Detect chain from transaction and remove top level chain property
 [ ] Add "Ready to sign" button so that users can change their wallet before being flooded with requests
 
 ## How to use
+
+SafeSigner supports signing arbitrary messages, typed messages (EIP712) and broadcasting transactions.
+Under the hood we are using the [Viem](https://viem.sh/) methods `SignMessage`, `SignTypedData` and `PrepareTransactionRequest`.
+Our `SafeSignerRequest` type is just a wrapper over the parameter types for each of these methods.
+
 You can import the SafeSigner class and use it like so:
 ```typescript
 // Start the service
@@ -28,23 +33,21 @@ const signer = new SafeSigner();
 await signer.start();
 
 const request: SafeSignerRequest = {
-  type: 'message',
-  data: {
     message: 'Hello, world!'
-  }
 };
 
 // Send a message to be signed by the user
 const signedMessage = await signer.sendRequest(request);
 ```
 The user is then prompted to sign in their browser and it returns the signed message.
+
 You can also interact with SafeSigner through an API:
 ```bash
-    npm start # This runs ./start.ts so that the server is started
+    tsx ./start.ts # This starts the server so that requests can be received
     curl -X POST \
         -H 'Content-Type: application/json' \
-        -d '{"type": "value"}' \
-        http://example.com/api/endpoint
+        -d '{"message": "Hello, world!"}' \
+        http://localhost:3000/api/submit-request
 
 ```
 
