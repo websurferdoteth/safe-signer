@@ -1,5 +1,4 @@
-import React, { useEffect, useRef } from "react";
-import { Socket } from "socket.io-client";
+import React, { useEffect } from "react";
 import { SafeSignerRequest } from "../";
 import {
   PrepareTransactionRequestParameters,
@@ -8,15 +7,17 @@ import {
   SignTypedDataParameters,
   WalletClient,
 } from "viem";
+import { getChain } from "../utils/chains";
+import { SocketIOEmitter } from "./SocketIOContext";
 
 const handledRequests = new Set();
 
 const Signer = ({
-  socket,
+  emit,
   request,
   walletClient,
 }: {
-  socket: Socket;
+  emit: SocketIOEmitter;
   request: SafeSignerRequest;
   walletClient: WalletClient;
 }) => {
@@ -44,7 +45,12 @@ const Signer = ({
             );
             response = { data: signed };
           } else if (req as PrepareTransactionRequestParameters) {
-            const tx = await walletClient?.prepareTransactionRequest(req as PrepareTransactionRequestParameters);
+            const unsignedTx = Object.assign({}, req) as PrepareTransactionRequestParameters;
+            // Convert chain to Chain object
+            if (unsignedTx.chain) {
+              unsignedTx.chain = getChain(unsignedTx.chain);
+            }
+            const tx = await walletClient?.prepareTransactionRequest(unsignedTx);
             const signed = await walletClient?.sendTransaction(
               tx as unknown as SignTransactionParameters<any,any>
             );
@@ -55,16 +61,16 @@ const Signer = ({
           response = { error: error?.message };
         }
 
-        if (socket) {
-          socket.emit("response", response);
-        }
+        
+        emit("response", response);
+        
       } catch (error) {
         console.error("Failed to sign message:", error);
       }
     };
 
     handleRequest(request);
-  }, []);
+  }, [request, emit, walletClient]);
 
   return (
     <div>

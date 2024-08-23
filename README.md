@@ -16,6 +16,7 @@ The purpose of SafeSigner is to enable developers to sign messages and transacti
 [x] Clean up api responses
 [x] Safely handle when wallet doesn't have the requested chain
 [x] Detect chain from transaction and remove top level chain property
+[ ] Return connected address somewhere
 [ ] Add Custom Chain Support
 [ ] Add Readme instructions for api use
 [ ] Add "Ready to sign" button so that users can change their wallet before being flooded with requests

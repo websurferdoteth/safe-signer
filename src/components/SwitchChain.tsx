@@ -1,23 +1,23 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import { Socket } from "socket.io-client";
+import React, { useCallback, useEffect, useState } from "react";
 import { SafeSignerRequest } from "..";
 import { compareChains, getChain } from "../utils/chains";
 import { Chain, PrepareTransactionRequestParameters, WalletClient } from "viem";
 import { SignTypedDataParameters } from "viem/accounts";
+import Signer from "./Signer";;
+import { SocketIOEmitter } from "./SocketIOContext";
 
 const handledSwitchChainRequests = new Set();
 
 const SwitchChain = ({
-  socket,
+  emit,
   request,
   walletClient,
-  setIsCorrectChain,
 }: {
-  socket: Socket;
+  emit: SocketIOEmitter;
   request: SafeSignerRequest;
   walletClient: WalletClient;
-  setIsCorrectChain: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const [ isCorrectChain, setIsCorrectChain ] = useState(false);
 
   const handleSwitchChain = useCallback(async (req: SafeSignerRequest) => {
       const requestId = `SwitchingChainPhase:${JSON.stringify(req)}`;
@@ -41,9 +41,9 @@ const SwitchChain = ({
             console.error("Invalid chain:", chain);
             throw new Error("Unsupported chain");
           }
+
           const chainId = requestChain.id;
           const currentChainId = walletClient?.chain?.id;
-
           if (!compareChains(currentChainId as number, chainId)) {
             try {
               await walletClient?.switchChain({ id: chainId });
@@ -62,17 +62,25 @@ const SwitchChain = ({
         setIsCorrectChain(true);
       } catch (error: any) {
         console.error("Failed to switch chain:", error);
-        socket.emit("response", { error: error?.message });
+        emit("response", { error: error?.message });
+        setIsCorrectChain(false);
       }
-  }, [walletClient, request]);
+  }, [walletClient, emit]);
 
   useEffect(() => {
-    handleSwitchChain(request);
-  }, []);
+    if (!isCorrectChain) {
+      handleSwitchChain(request);
+    }
+  }, [handleSwitchChain, isCorrectChain, request]);
 
   return (
     <div>
-      <h1>Switching to correct chain</h1>
+      <div>
+        {!isCorrectChain ? <h1>Switched to correct chain</h1> : null}
+      </div>
+      <div>
+        {isCorrectChain ? <Signer emit={emit} request={request} walletClient={walletClient} /> : null}
+      </div>
     </div>
   );
 };

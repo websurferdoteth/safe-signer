@@ -4,7 +4,7 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { useWalletClient } from "wagmi";
 import { useEffect } from "react";
-import SocketContext from "../components/SocketContext";
+import WalletContext from "../components/WalletContext";
 
 const Home: NextPage = () => {
   const { data: walletClient } = useWalletClient();
@@ -14,7 +14,7 @@ const Home: NextPage = () => {
     } else if (openConnectModal) {
       openConnectModal();
     }
-  }, [walletClient]);
+  }, [walletClient, openConnectModal]);
 
   return (
     <div className={styles.container}>
@@ -27,7 +27,7 @@ const Home: NextPage = () => {
         <link href="/favicon.ico" rel="icon" />
       </Head>
       <ConnectButton />
-      <SocketContext />
+      <WalletContext />
     </div>
   );
 };

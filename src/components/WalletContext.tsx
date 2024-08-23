@@ -1,35 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { Socket } from "socket.io-client";
 import { SafeSignerRequest } from "..";
 import { useWalletClient } from "wagmi";
-import Signer from "./Signer";
 import SwitchChain from "./SwitchChain";
+import { SocketIOContext } from "./SocketIOContext";
 
-const WalletContext = ({
-  socket,
-  request,
-}: {
-  socket: Socket;
-  request: SafeSignerRequest;
-}) => {
+const WalletContext = () => {
   const { data: walletClient } = useWalletClient();
-  const [ isCorrectChain, setIsCorrectChain ] = useState(false);
+  const socketContext = useContext(SocketIOContext);
 
-  useEffect(() => {
-    setIsCorrectChain(false);
-  }, [request]);
-  
   return (
     <div>
       <div>
-      {walletClient && !isCorrectChain && (
-        <SwitchChain socket={socket} request={request} walletClient={walletClient} setIsCorrectChain={setIsCorrectChain} />
-        )
-      }
-      </div>
-      <div>
-      {walletClient && isCorrectChain && (
-        <Signer socket={socket} request={request} walletClient={walletClient} />
+      {walletClient && socketContext && socketContext.request && socketContext.emit && (
+        <SwitchChain emit={socketContext.emit} request={socketContext.request} walletClient={walletClient} />
         )
       }
       </div>
