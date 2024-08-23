@@ -1,25 +1,25 @@
 # SafeSigner (WIP)
+>This whole project is very erratic. Perhaps there is a better construction that would solve the problems but the issues are related to needing to ensure the chain changes before a sign request is made. Due to React I don't see a clean, simple way of solving the problems.
+
 The purpose of SafeSigner is to enable developers to sign messages and transactions from their preferred browser or mobile wallet without increasing your surface area for hacks by requiring you to view, copy and paste your private key.
 
 ## TODO
-[x] Add message signing method 
-[x] Add multiple methods for signing:
+- [x] Add message signing method
 - [x] Add message (EIP712) signing method
 - [x] Add Transaction signing method
-[x] Add convenient ways to interact:
 - [x] From contract deployment processes
 - [x] From any other process that needs a signature
-[x] Add Sign out button
-[x] Add message standard that handles message type, network, data, etc.
-[x] Add ability to change networks
-[x] Bubble up front end errors such as transaction rejections to back end
-[x] Clean up api responses
-[x] Safely handle when wallet doesn't have the requested chain
-[x] Detect chain from transaction and remove top level chain property
-[ ] Return connected address somewhere
-[ ] Add Custom Chain Support
-[ ] Add Readme instructions for api use
-[ ] Add "Ready to sign" button so that users can change their wallet before being flooded with requests
+- [x] Add Sign out button
+- [x] Add message standard that handles message type, network, data, etc.
+- [x] Add ability to change networks
+- [x] Bubble up front end errors such as transaction rejections to back end
+- [x] Clean up api responses
+- [x] Safely handle when wallet doesn't have the requested chain
+- [x] Detect chain from transaction and remove top level chain property
+- [ ] Return connected address somewhere
+- [ ] Add Custom Chain Support
+- [ ] Add Readme instructions for api use
+- [ ] Add "Ready to sign" button so that users can change their wallet before being flooded with requests
 
 ## How to use
 
