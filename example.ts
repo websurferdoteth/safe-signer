@@ -52,7 +52,8 @@ const signTypedDataRequest = {
 const transactionRequest = {
     to: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
     value: 0,
-    chain: 111555111
+    chain: 31337,
+    gas: 1000000,
 };
 
 async function main() {
@@ -73,7 +74,7 @@ async function main() {
   } catch (error) {
     console.error('Error:', error);
   } finally {
-    signer.stop();
+    // signer.stop();
   }
 }
 

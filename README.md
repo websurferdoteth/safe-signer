@@ -1,4 +1,4 @@
-# SafeSigner
+# SafeSigner (WIP)
 The purpose of SafeSigner is to enable developers to sign messages and transactions from their preferred browser or mobile wallet without increasing your surface area for hacks by requiring you to view, copy and paste your private key.
 
 ## TODO
