@@ -14,10 +14,12 @@ export type SocketIOEmitter = (<Ev extends string>(
   ...args: any[]
 ) => Socket<DefaultEventsMap, DefaultEventsMap>);
 
-export const SocketIOContext = createContext<{
-  request: SafeSignerRequest | null;
-  emit: SocketIOEmitter | undefined;
-} | null>(null);
+const defaultContext = {
+  request: null as SafeSignerRequest | null,
+  emit: undefined as SocketIOEmitter | undefined,
+};
+
+export const SocketIOContext = createContext(defaultContext);
 
 export const SocketIOProvider = ({
   children,
@@ -38,6 +40,7 @@ export const SocketIOProvider = ({
 
       socketRef.current.on("request", (newRequest) => {
         setRequest(newRequest);
+        console.log("Received request", newRequest);
       });
 
       socketRef.current.on("disconnect", () => {
