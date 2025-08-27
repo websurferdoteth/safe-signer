@@ -1,4 +1,5 @@
-import SafeSigner, { SafeSignerRequest } from './src/index';
+import SafeSigner from './src/index';
+import { foundry } from 'wagmi/chains';
 const messageRequest = {
   message: 'Hello, world!'
 };
@@ -8,7 +9,6 @@ const signTypedDataRequest = {
     name: "EIP-712 Message",
     version: "1",
     chainId: 8453,
-    // chainId: 43114,
   },
   types: {
     Person: [
@@ -110,19 +110,19 @@ async function main() {
   console.log("SafeSigner started");
   try {
     console.log("Asking for signature on message");
-    const response = await signer.sendRequest(messageRequest as SafeSignerRequest);
+    const response = await signer.sendRequest(messageRequest);
     console.log('Message signature:', response);
 
     console.log("Asking for signature on EIP712 Typed Data Message");
-    const responseAgain = await signer.sendRequest(signTypedDataRequest as unknown as SafeSignerRequest);
+    const responseAgain = await signer.sendRequest(signTypedDataRequest);
     console.log('Typed message signature:', responseAgain);
 
     console.log("Asking for signature on EIP712 Typed Data Message 2");
-    const response2 = await signer.sendRequest(signTypedDataRequest2 as any);
+    const response2 = await signer.sendRequest(signTypedDataRequest2);
     console.log('Typed message signature 2:', response2);
 
     console.log("Asking for signature and broadcast of transaction");
-    const responseAgainAgain = await signer.sendRequest(transactionRequest as any);
+    const responseAgainAgain = await signer.sendRequest(transactionRequest);
     console.log('Transaction submitted:', responseAgainAgain);
   } catch (error) {
     console.error('Error:', error);

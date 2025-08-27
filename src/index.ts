@@ -2,8 +2,21 @@ import { startServer } from './server';
 import { io, Socket } from 'socket.io-client';
 import open from 'open';
 import { SignMessageParameters, SignTypedDataParameters, PrepareTransactionRequestParameters } from 'viem';
+import type { Chain } from 'viem/chains';
 
-export type SafeSignerRequest = SignMessageParameters | SignTypedDataParameters | PrepareTransactionRequestParameters;
+type FlexibleTransactionRequest = Omit<PrepareTransactionRequestParameters, 'account' | 'value' | 'gas' | 'gasPrice' | 'maxFeePerGas' | 'maxPriorityFeePerGas' | 'chain'> & {
+  value?: bigint | number;
+  gas?: bigint | number;
+  gasPrice?: bigint | number;
+  maxFeePerGas?: bigint | number;
+  maxPriorityFeePerGas?: bigint | number;
+  chain?: Chain | number;
+};
+
+export type SafeSignerRequest =
+  | Omit<SignTypedDataParameters, 'account'>
+  | Omit<SignMessageParameters, 'account'>
+  | FlexibleTransactionRequest;
 
 class SafeSigner {
   private socket!: Socket;
