@@ -55,7 +55,7 @@ class SafeSigner {
       return nextHandler(req, res);
     });
 
-    await open(`http://localhost:${this.port}`, { wait: true, background: true});
+    await open(`http://localhost:${this.port}`, { background: true});
   }
 
   async sendRequest(request: SafeSignerRequest): Promise<string> {
