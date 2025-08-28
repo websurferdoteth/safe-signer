@@ -1,6 +1,4 @@
-# SafeSigner (WIP)
->This whole project is very erratic. Perhaps there is a better construction that would solve the problems but the issues are related to needing to ensure the chain changes before a sign request is made. Due to React I don't see a clean, simple way of solving the problems.
-
+# SafeSigner
 The purpose of SafeSigner is to enable developers to sign messages and transactions from their preferred browser or mobile wallet without increasing your surface area for hacks by requiring you to view, copy and paste your private key.
 
 ## TODO
@@ -17,7 +15,7 @@ The purpose of SafeSigner is to enable developers to sign messages and transacti
 - [x] Safely handle when wallet doesn't have the requested chain
 - [x] Detect chain from transaction and remove top level chain property
 - [ ] Return connected address somewhere
-- [ ] Add Custom Chain Support
+- [x] Add Custom Chain Support
 - [ ] Add Readme instructions for api use
 - [ ] Add "Ready to sign" button so that users can change their wallet before being flooded with requests
 
@@ -38,19 +36,83 @@ const request: SafeSignerRequest = {
 };
 
 // Send a message to be signed by the user
-const signedMessage = await signer.sendRequest(request);
+const { data: signedMessage, error } = await signer.signRequest(request);
 ```
-The user is then prompted to sign in their browser and it returns the signed message.
+The user is then prompted to sign the message or transaction in their browser, returning the signature or transaction hash.
+
+### API Use
 
 You can also interact with SafeSigner through an API:
 ```bash
-    tsx ./start.ts # This starts the server so that requests can be received
+    npx tsx ./start.ts # This starts the server so that requests can be received
     curl -X POST \
         -H 'Content-Type: application/json' \
         -d '{"message": "Hello, world!"}' \
         http://localhost:3000/api/submit-request
 
 ```
+
+## Running the Example
+
+The repository includes an `example.ts` file that demonstrates how to use SafeSigner. Here's how to run it:
+
+### Running with tsx
+
+There are a few options for running the example:
+
+#### Option 1: Using npx (Recommended)
+```bash
+npx tsx example.ts
+```
+
+#### Option 2: Install tsx globally
+1. **Install tsx globally** (if not already installed):
+   ```bash
+   npm install -g tsx
+   ```
+
+2. **Run the example**:
+   ```bash
+   tsx example.ts
+   ```
+
+### What happens
+   - The SafeSigner service starts and opens a web interface in your browser
+   - A few different types of signature requests are sent to the web interface
+   - You'll see multiple signing requests in your wallet
+   - After signing, the returned signatures or transaction hashes are logged to the console
+
+### Example Output
+```
+Ready on http://localhost:3000
+SafeSigner started
+Asking for signature on message
+Client connected
+ ○ Compiling / ...
+ ✓ Compiled / in 1214ms (1969 modules)
+ GET / 200 in 2237ms
+Client connected
+Client is ready
+SafeSigner: Client is ready
+Message signature: {
+  data: '0x6a63a187cc2511029b4ef4a73c0d5fba53ed6fc57976c0d472b1b4634eade9ae681d59362382e484189e9660f972056c49633236deeaa546ebd611e66b77dea61c'
+}
+Asking for signature on EIP712 Typed Data Message
+Typed message signature: {
+  data: '0xdd04019990bb8f84b47f9e166277a65114724a9b96f72c6fa7c09cf180431e731ed9754134badd4d9c3cc60dc8b4523e9c6143e3871d6d0387e860b58afa95f11b'
+}
+....
+```
+
+### Customizing the Example
+
+You can modify `example.ts` to test different types of requests:
+
+- **Message signing**: Change the `request` object to use `message` instead of transaction parameters
+- **Typed data signing**: Use `types` and `domain` for EIP-712 signing
+- **Transaction signing and broadcasting**: Provide transaction parameters (like `to`, `value`, `chain`, etc.) to sign and send a transaction; the returned value will be the transaction hash.
+- **Different networks**: Modify the `chain` parameter to use other networks
+
 
 ## Limitations
 Because you have to sign each request manually from your wallet this method is not practical for signing dozens of transactions in one sitting unless you have great patience. 🧘
