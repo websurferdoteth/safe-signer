@@ -6,7 +6,7 @@ import React, {
   createContext,
 } from "react";
 import io, { Socket } from "socket.io-client";
-import { SafeSignerRequest } from "..";
+import { SafeSignerOptions, SafeSignerRequest } from "..";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
 export type SocketIOEmitter = (<Ev extends string>(
@@ -16,6 +16,7 @@ export type SocketIOEmitter = (<Ev extends string>(
 
 const defaultContext = {
   request: null as SafeSignerRequest | null,
+  options: null as SafeSignerOptions | null,
   emit: undefined as SocketIOEmitter | undefined,
 };
 
@@ -27,6 +28,7 @@ export const SocketIOProvider = ({
   children: ReactNode;
 }): React.JSX.Element => {
   const [request, setRequest] = useState<SafeSignerRequest | null>(null);
+  const [options, setOptions] = useState<SafeSignerOptions | null>(null);
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
@@ -38,9 +40,10 @@ export const SocketIOProvider = ({
         socketRef.current?.emit("ready");
       });
 
-      socketRef.current.on("request", (newRequest) => {
+      socketRef.current.on("request", (newRequest, options) => {
         setRequest(newRequest);
-        console.log("Received request", newRequest);
+        setOptions(options);
+        console.log("Received request", newRequest, options);
       });
 
       socketRef.current.on("disconnect", () => {
@@ -57,6 +60,7 @@ export const SocketIOProvider = ({
 
   const ret = {
     request,
+    options,
     emit: socketRef.current?.emit.bind(socketRef.current),
   };
 
