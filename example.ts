@@ -63,8 +63,8 @@ async function main() {
   await signer.start();
   console.log("SafeSigner started");
   try {
-    console.log("Asking for signature on message");
-    const messageResponse = await signer.sendRequest(messageRequest);
+    console.log("Asking for signature on message from specific address");
+    const messageResponse = await signer.sendRequest(messageRequest, { address: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB' });
     console.log('Message signature:', messageResponse);
 
     console.log("Asking for signature on EIP712 Typed Data Message");

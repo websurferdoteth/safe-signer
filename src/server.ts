@@ -3,7 +3,7 @@ import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import next from 'next';
 import path from 'path'
-import { SafeSignerRequest } from '.';
+import { SafeSignerRequest, SafeSignerOptions } from '.';
 import { RequestHandler } from 'next/dist/server/next';
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -31,8 +31,8 @@ export async function startServer(port: number = 3000): Promise<{ server: http.S
       io.emit('response', response);
     });
 
-    socket.on('request', (request: SafeSignerRequest) => {
-      io.emit('request', request);
+    socket.on('request', (request: SafeSignerRequest, options: SafeSignerOptions = {}) => {
+      io.emit('request', request, options);
     });
 
     socket.on('disconnect', () => {

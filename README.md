@@ -38,18 +38,36 @@ const request: SafeSignerRequest = {
 // Send a message to be signed by the user
 const { data: signedMessage, error } = await signer.signRequest(request);
 ```
-The user is then prompted to sign the message or transaction in their browser, returning the signature or transaction hash.
+
+### Options Parameter
+
+The `signRequest` method accepts an optional second parameter `options`:
+
+- **`address`**: If specified, SafeSigner will enforce that the user connects with this exact wallet address before allowing them to sign.
+
+```typescript
+const { data: signedMessage, error } = await signer.signRequest(request, {
+    address: '0x1234567890123456789012345678901234567890'
+});
+```
 
 ### API Use
 
 You can also interact with SafeSigner through an API:
 ```bash
     npx tsx ./start.ts # This starts the server so that requests can be received
+    
+    # Basic request
     curl -X POST \
         -H 'Content-Type: application/json' \
-        -d '{"message": "Hello, world!"}' \
+        -d '{"request": {"message": "Hello, world!"}}' \
         http://localhost:3000/api/submit-request
 
+    # Request with address enforcement
+    curl -X POST \
+        -H 'Content-Type: application/json' \
+        -d '{"request": {"message": "Hello, world!"}, "options": {"address": "0x1234567890123456789012345678901234567890"}}' \
+        http://localhost:3000/api/submit-request
 ```
 
 ## Running the Example
