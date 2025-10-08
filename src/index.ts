@@ -36,12 +36,10 @@ class SafeSigner {
     this.socket = io(`http://localhost:${this.port}`);
 
     this.socket.on('clientReady', () => {
-      console.log('SafeSigner: Client is ready');
       this.clientReady = true;
     });
 
     this.socket.on('clientDisconnected', () => {
-      console.log('SafeSigner: Client disconnected');
       this.clientReady = false;
     });
 
@@ -72,6 +70,7 @@ class SafeSigner {
       return nextHandler(req, res);
     });
 
+    const { default: open } = await import('open');
     await open(`http://localhost:${this.port}`, { background: true});
   }
 
@@ -100,3 +99,4 @@ class SafeSigner {
 }
 
 export default SafeSigner;
+export { SafeSigner };
