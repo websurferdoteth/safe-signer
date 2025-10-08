@@ -36,7 +36,6 @@ export const SocketIOProvider = ({
       socketRef.current = io();
 
       socketRef.current.on("connect", () => {
-        console.log("Connected to server");
         socketRef.current?.emit("ready");
       });
 

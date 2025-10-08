@@ -19,10 +19,15 @@ export const useProcessRequest = () => {
   const switchToRequestedChain = useSwitchToRequestedChain();
   
   const processRequest = useCallback(async (req: SafeSignerRequest) => {
-    if (!isRequestedChain) await switchToRequestedChain()
+    if (!isRequestedChain) {
+      await switchToRequestedChain();
+    } else {
+      console.log("processRequest: Already on requested chain");
+    }
 
     const requestId = `SigningPhase:${JSON.stringify(req)}`;
     if (handledRequests.has(requestId)) {
+      console.log("processRequest: Request already handled, skipping", { requestId });
       return;
     }
 
@@ -43,7 +48,10 @@ export const useProcessRequest = () => {
             unsignedTx.chain = getChain(unsignedTx.chain);
           }
           const tx = await walletClient?.prepareTransactionRequest(unsignedTx);
-          if (!tx) throw new Error('Failed to prepare transaction');
+          if (!tx) {
+            console.error("processRequest: Failed to prepare transaction - no transaction returned");
+            throw new Error('Failed to prepare transaction');
+          }
           const signed = await walletClient?.sendTransaction(tx);
           response = { data: signed };
         } 
@@ -54,7 +62,11 @@ export const useProcessRequest = () => {
       emit && emit("response", response);
       
     } catch (error) {
-      console.error("Failed to sign message:", error);
+      console.error("processRequest: Failed to sign message", {
+        error: error,
+        requestId,
+        timestamp: new Date().toISOString()
+      });
     }
   }, [emit, walletClient, isRequestedChain, switchToRequestedChain]);
 

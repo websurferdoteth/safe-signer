@@ -6,8 +6,8 @@ import path from 'path'
 import { SafeSignerRequest, SafeSignerOptions } from '.';
 import { RequestHandler } from 'next/dist/server/next';
 
-const dev = process.env.NODE_ENV !== 'production';
-const nextApp = next({ dev, dir: path.join(__dirname, '../'), customServer: true });
+const nextDir = path.join(__dirname, '..');
+const nextApp = next({ dev: false, dir: nextDir });
 const nextHandler = nextApp.getRequestHandler();
 
 export async function startServer(port: number = 3000): Promise<{ server: http.Server, app: Express, nextHandler: RequestHandler }> {
@@ -20,8 +20,6 @@ export async function startServer(port: number = 3000): Promise<{ server: http.S
   app.use(express.json());
 
   io.on('connection', (socket) => {
-    console.log('Client connected');
-
     socket.on('ready', () => {
       console.log('Client is ready');
       io.emit('clientReady');
