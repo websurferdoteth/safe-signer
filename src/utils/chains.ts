@@ -38,7 +38,7 @@ export const extractChainIdFromRequest = (req: SafeSignerRequest): number | null
     // For SignTypedDataParameters, get chainId from domain
     const typedDataChainId = (req as unknown as SignTypedDataParameters)?.domain?.chainId;
     if (typedDataChainId !== undefined) {
-        return typedDataChainId;
+        return Number(typedDataChainId);
     }
     
     // For PrepareTransactionRequestParameters, get chain and convert to ID
