@@ -1,5 +1,5 @@
 {
-  "name": "safe-sign",
+  "name": "safe-signer",
   "private": false,
   "version": "0.1.0",
   "main": "dist/index.js",
