@@ -57,7 +57,7 @@ function AddressModal({ isOpen, onClose, requiredAddress }: AddressModalProps) {
             Required address: <span style={{ fontFamily: 'monospace', fontWeight: 'bold', color: '#111827' }}>{requiredAddress}</span>
           </p>
           <p style={{ color: '#4B5563', marginBottom: '1rem' }}>
-            Make sure you've switched to this address in your wallet before trying again.
+            Make sure you&apos;ve switched to this address in your wallet before trying again.
           </p>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button 
