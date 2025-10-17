@@ -22,11 +22,11 @@
     "open": "^10.2.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "socket.io": "4.7.5",
-    "socket.io-client": "4.7.5",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "tsx": "^4.17.0",
-    "viem": "2.23.9",
-    "wagmi": "2.14.15"
+    "viem": "^2.23.9",
+    "wagmi": "^2.18.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
